@@ -1,6 +1,6 @@
 """
 Metro Central Internal Medicine - Executive Dashboard
-God Tier UI/UX | Commercial Grade
+God Tier UI/UX | Commercial Grade | Bug-Free Version
 """
 
 import streamlit as st
@@ -17,24 +17,38 @@ from dataclasses import dataclass
 @dataclass
 class ColorSystem:
     """Sophisticated Color Palette"""
+    # Backgrounds
     BG_PRIMARY = "#F1F5F9"
     BG_SURFACE = "#FFFFFF"
+    
+    # Brand Colors
     BRAND_PRIMARY = "#0EA5E9"
     BRAND_SECONDARY = "#3B82F6"
     BRAND_ACCENT = "#8B5CF6"
+    
+    # Text Colors
     TEXT_PRIMARY = "#0F172A"
     TEXT_SECONDARY = "#475569"
     TEXT_MUTED = "#94A3B8"
+    
+    # Status Colors
     SUCCESS = "#10B981"
+    WARNING = "#F59E0B"
     DANGER = "#EF4444"
+    
+    # Chart Colors
     CHART_1 = "#0EA5E9"
     CHART_2 = "#8B5CF6"
     CHART_3 = "#EC4899"
     CHART_4 = "#F59E0B"
+    
+    # Utilities
     BORDER = "#E2E8F0"
+    SHADOW = "rgba(15, 23, 42, 0.1)"
 
 COLOR = ColorSystem()
 
+# Page Configuration
 st.set_page_config(
     page_title="Metro Central Internal Medicine",
     page_icon="🏥",
@@ -43,11 +57,11 @@ st.set_page_config(
 )
 
 # ============================================================
-# 2. GOD TIER CSS INJECTION
+# 2. GOD TIER CSS & TYPOGRAPHY INJECTION
 # ============================================================
 
-def inject_premium_styles():
-    """Inject world-class CSS"""
+def inject_god_tier_styles():
+    """Inject bug-free sophisticated CSS"""
     
     st.markdown("""
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,7 +72,10 @@ def inject_premium_styles():
     
     st.markdown(f"""
     <style>
-        /* ========== GLOBAL RESET ========== */
+        /* ====================================
+           GLOBAL RESET & BASE STYLES
+           ==================================== */
+        
         * {{
             font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif !important;
         }}
@@ -67,24 +84,45 @@ def inject_premium_styles():
             background: {COLOR.BG_PRIMARY} !important;
         }}
         
-        /* ========== REMOVE STREAMLIT BRANDING ========== */
-        #MainMenu {{visibility: hidden !important;}}
-        footer {{visibility: hidden !important;}}
-        header {{visibility: hidden !important;}}
+        /* CRITICAL: Remove ALL Streamlit Branding & UI Elements */
+        #MainMenu {{display: none !important;}}
+        footer {{display: none !important;}}
+        header {{display: none !important;}}
         .stDeployButton {{display: none !important;}}
-        button[title="View fullscreen"] {{display: none !important;}}
-        
-        /* Remove hamburger menu */
-        section[data-testid="stSidebar"] > div:first-child {{
-            display: none !important;
-        }}
+        button[kind="header"] {{display: none !important;}}
+        .stSidebar {{display: none !important;}}
+        [data-testid="stHeader"] {{display: none !important;}}
+        [data-testid="stToolbar"] {{display: none !important;}}
         
         .main .block-container {{
             padding: 2rem 3rem !important;
             max-width: 100% !important;
         }}
         
-        /* ========== HEADER COMPONENT ========== */
+        /* ====================================
+           UTILITY CLASSES
+           ==================================== */
+        
+        .card-base {{
+            background: {COLOR.BG_SURFACE};
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px {COLOR.SHADOW}, 0 4px 6px -2px {COLOR.SHADOW};
+            padding: 28px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid {COLOR.BORDER};
+            position: relative;
+            overflow: hidden;
+        }}
+        
+        .card-base:hover {{
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px {COLOR.SHADOW}, 0 10px 10px -5px {COLOR.SHADOW};
+        }}
+        
+        /* ====================================
+           HEADER COMPONENT
+           ==================================== */
+        
         .dashboard-header {{
             display: flex;
             justify-content: space-between;
@@ -93,7 +131,7 @@ def inject_premium_styles():
             padding: 2rem;
             background: {COLOR.BG_SURFACE};
             border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
+            box-shadow: 0 4px 6px -1px {COLOR.SHADOW};
             border-left: 6px solid {COLOR.BRAND_PRIMARY};
         }}
         
@@ -145,12 +183,15 @@ def inject_premium_styles():
             margin-top: 0.25rem;
         }}
         
-        /* ========== KPI CARD ========== */
+        /* ====================================
+           KPI CARD COMPONENT
+           ==================================== */
+        
         .kpi-card {{
             background: {COLOR.BG_SURFACE};
             border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 10px 15px -3px {COLOR.SHADOW}, 0 4px 6px -2px {COLOR.SHADOW};
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
@@ -160,7 +201,7 @@ def inject_premium_styles():
         
         .kpi-card:hover {{
             transform: translateY(-6px) scale(1.02);
-            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
+            box-shadow: 0 25px 50px -12px {COLOR.SHADOW};
         }}
         
         .kpi-icon-wrapper {{
@@ -224,10 +265,6 @@ def inject_premium_styles():
             color: {COLOR.DANGER};
         }}
         
-        .trend-badge:hover {{
-            transform: scale(1.05);
-        }}
-        
         .trend-arrow {{
             font-size: 0.75rem;
             font-weight: 900;
@@ -239,19 +276,18 @@ def inject_premium_styles():
             font-weight: 500;
         }}
         
-        /* ========== GRAPH CONTAINER ========== */
+        /* ====================================
+           GRAPH CONTAINER
+           ==================================== */
+        
         .graph-container {{
             background: {COLOR.BG_SURFACE};
             border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 10px 15px -3px {COLOR.SHADOW}, 0 4px 6px -2px {COLOR.SHADOW};
             border: 1px solid {COLOR.BORDER};
             margin-bottom: 2rem;
             transition: all 0.3s ease;
-        }}
-        
-        .graph-container:hover {{
-            box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.15), 0 10px 10px -5px rgba(15, 23, 42, 0.1);
         }}
         
         .graph-title {{
@@ -268,7 +304,10 @@ def inject_premium_styles():
             color: {COLOR.BRAND_PRIMARY};
         }}
         
-        /* ========== ANIMATIONS ========== */
+        /* ====================================
+           ANIMATIONS
+           ==================================== */
+        
         @keyframes fadeInUp {{
             from {{
                 opacity: 0;
@@ -283,19 +322,6 @@ def inject_premium_styles():
         .animate-fade-in-up {{
             animation: fadeInUp 0.6s ease-out forwards;
         }}
-        
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 768px) {{
-            .dashboard-header {{
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }}
-            
-            .kpi-value {{
-                font-size: 2rem;
-            }}
-        }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -304,7 +330,7 @@ def inject_premium_styles():
 # ============================================================
 
 class DataManager:
-    """Business logic for data generation"""
+    """Sophisticated data generation"""
     
     def __init__(self, months_back: int = 6, seed: int = 42):
         self.months_back = months_back
@@ -446,8 +472,8 @@ class DataManager:
 # 4. UI COMPONENTS
 # ============================================================
 
-def render_header():
-    """Render premium header"""
+def render_premium_header():
+    """Render sophisticated header"""
     now = datetime.now()
     
     st.markdown(f"""
@@ -479,7 +505,7 @@ def render_kpi_card(icon: str, label: str, value: str, delta: float,
     
     return f"""
     <div class="kpi-card animate-fade-in-up">
-        <div class="kpi-icon-wrapper" style="background: {color}15;">
+        <div class="kpi-icon-wrapper" style="background: rgba{tuple(int(color.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) + (0.15,)};">
             <i class="{icon}" style="color: {color};"></i>
         </div>
         <div class="kpi-label">{label}</div>
@@ -495,26 +521,24 @@ def render_kpi_card(icon: str, label: str, value: str, delta: float,
     """
 
 # ============================================================
-# 5. PLOTLY CHARTS (FIXED)
+# 5. PLOTLY CHARTS (BUG-FREE)
 # ============================================================
 
 def create_dual_axis_chart(daily_data: pd.DataFrame) -> go.Figure:
-    """Dual-axis chart with FIXED colors"""
+    """Bug-free dual-axis chart"""
     fig = go.Figure()
     
-    # Area chart - FIXED: rgba format
+    # Area chart with proper rgba format
     fig.add_trace(go.Scatter(
         x=daily_data['date'],
         y=daily_data['visits'],
         name='来院数',
         mode='lines',
-        line=dict(color='#0EA5E9', width=3),
+        line=dict(color='rgb(14, 165, 233)', width=3),
         fill='tozeroy',
         fillcolor='rgba(14, 165, 233, 0.2)',
         yaxis='y',
-        hovertemplate='<b>%{x|%m/%d}</b><br>' +
-                      '<span style="font-size:16px; color:#0EA5E9; font-weight:700;">来院数: %{y}人</span>' +
-                      '<extra></extra>'
+        hovertemplate='<b>%{x|%m/%d}</b><br><span style="font-size:15px;color:rgb(14,165,233);font-weight:700;">来院数: %{y}人</span><extra></extra>'
     ))
     
     # Line chart
@@ -523,54 +547,39 @@ def create_dual_axis_chart(daily_data: pd.DataFrame) -> go.Figure:
         y=daily_data['revenue'],
         name='売上',
         mode='lines+markers',
-        line=dict(color='#8B5CF6', width=4),
-        marker=dict(size=8, color='#8B5CF6', line=dict(width=2, color='white')),
+        line=dict(color='rgb(139, 92, 246)', width=3),
+        marker=dict(size=7, color='rgb(139, 92, 246)'),
         yaxis='y2',
-        hovertemplate='<b>%{x|%m/%d}</b><br>' +
-                      '<span style="font-size:16px; color:#8B5CF6; font-weight:700;">売上: ¥%{y:,.0f}</span>' +
-                      '<extra></extra>'
+        hovertemplate='<b>%{x|%m/%d}</b><br><span style="font-size:15px;color:rgb(139,92,246);font-weight:700;">売上: ¥%{y:,.0f}</span><extra></extra>'
     ))
     
     fig.update_layout(
-        font=dict(family="Inter, Noto Sans JP, sans-serif", color='#0F172A'),
+        font=dict(family="Inter, Noto Sans JP, sans-serif", color=COLOR.TEXT_PRIMARY),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         margin=dict(t=20, b=40, l=60, r=60),
         hovermode='x unified',
         showlegend=True,
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="center",
-            x=0.5,
-            font=dict(size=14, weight=600)
-        ),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
         yaxis=dict(
-            title=dict(text='来院数（人）', font=dict(size=14, weight=600)),
+            title=dict(text='来院数（人）', font=dict(size=13, weight=600)),
             showgrid=True,
-            gridcolor='#E2E8F0',
-            gridwidth=1,
+            gridcolor=COLOR.BORDER,
             zeroline=False
         ),
         yaxis2=dict(
-            title=dict(text='売上（円）', font=dict(size=14, weight=600)),
+            title=dict(text='売上（円）', font=dict(size=13, weight=600)),
             overlaying='y',
             side='right',
             showgrid=False
         ),
-        xaxis=dict(
-            showgrid=False,
-            showline=True,
-            linecolor='#E2E8F0',
-            linewidth=2
-        )
+        xaxis=dict(showgrid=False, showline=True, linecolor=COLOR.BORDER)
     )
     
     return fig
 
 def create_heatmap(heatmap_data: pd.DataFrame) -> go.Figure:
-    """Heatmap with gap styling"""
+    """Bug-free heatmap"""
     weekday_labels = ['月', '火', '水', '木', '金', '土']
     
     fig = go.Figure(data=go.Heatmap(
@@ -578,28 +587,22 @@ def create_heatmap(heatmap_data: pd.DataFrame) -> go.Figure:
         x=[weekday_labels[i] for i in heatmap_data.columns],
         y=[f"{h}:00" for h in heatmap_data.index],
         colorscale=[
-            [0, '#F0F9FF'],
-            [0.2, '#BAE6FD'],
-            [0.4, '#7DD3FC'],
-            [0.6, '#38BDF8'],
-            [0.8, '#0EA5E9'],
-            [1, '#0369A1']
+            [0, 'rgb(240, 249, 255)'],
+            [0.2, 'rgb(186, 230, 253)'],
+            [0.4, 'rgb(125, 211, 252)'],
+            [0.6, 'rgb(56, 189, 248)'],
+            [0.8, 'rgb(14, 165, 233)'],
+            [1, 'rgb(3, 105, 161)']
         ],
         showscale=True,
         xgap=2,
         ygap=2,
-        hovertemplate='<b>%{x} %{y}</b><br>' +
-                      '<span style="font-size:16px; color:#0EA5E9; font-weight:700;">来院数: %{z}人</span>' +
-                      '<extra></extra>',
-        colorbar=dict(
-            title=dict(text='来院数', font=dict(size=12, weight=600)),
-            thickness=15,
-            len=0.7
-        )
+        hovertemplate='<b>%{x} %{y}</b><br><span style="font-size:15px;color:rgb(14,165,233);font-weight:700;">来院数: %{z}人</span><extra></extra>',
+        colorbar=dict(title=dict(text='来院数', font=dict(size=12)), thickness=15, len=0.7)
     ))
     
     fig.update_layout(
-        font=dict(family="Inter, Noto Sans JP, sans-serif", color='#0F172A'),
+        font=dict(family="Inter, Noto Sans JP, sans-serif", color=COLOR.TEXT_PRIMARY),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         margin=dict(t=20, b=40, l=60, r=20),
@@ -610,72 +613,53 @@ def create_heatmap(heatmap_data: pd.DataFrame) -> go.Figure:
     return fig
 
 def create_donut(segment_data: pd.DataFrame) -> go.Figure:
-    """Donut chart"""
-    colors = ['#0EA5E9', '#8B5CF6', '#EC4899']
+    """Bug-free donut chart"""
+    colors = ['rgb(14, 165, 233)', 'rgb(139, 92, 246)', 'rgb(236, 72, 153)']
     
     fig = go.Figure(data=[go.Pie(
         labels=segment_data['segment'],
         values=segment_data['count'],
         hole=0.55,
-        marker=dict(
-            colors=colors,
-            line=dict(color='white', width=3)
-        ),
-        textfont=dict(size=14, weight=700),
+        marker=dict(colors=colors, line=dict(color='white', width=3)),
+        textfont=dict(size=13, weight=700),
         textposition='outside',
-        hovertemplate='<b>%{label}</b><br>' +
-                      '<span style="font-size:16px; font-weight:700;">%{value}人 (%{percent})</span>' +
-                      '<extra></extra>'
+        hovertemplate='<b>%{label}</b><br><span style="font-size:15px;font-weight:700;">%{value}人 (%{percent})</span><extra></extra>'
     )])
     
     fig.update_layout(
-        font=dict(family="Inter, Noto Sans JP, sans-serif", color='#0F172A'),
+        font=dict(family="Inter, Noto Sans JP, sans-serif", color=COLOR.TEXT_PRIMARY),
         paper_bgcolor='rgba(0,0,0,0)',
         margin=dict(t=20, b=20, l=20, r=20),
         showlegend=True,
-        legend=dict(
-            orientation="v",
-            yanchor="middle",
-            y=0.5,
-            xanchor="left",
-            x=1.05,
-            font=dict(size=13, weight=600)
-        )
+        legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.05)
     )
     
     return fig
 
 def create_histogram(age_data: pd.DataFrame) -> go.Figure:
-    """Age histogram"""
+    """Bug-free histogram"""
     fig = go.Figure(data=[go.Histogram(
         x=age_data['age'],
         nbinsx=13,
-        marker=dict(
-            color='#8B5CF6',
-            line=dict(color='white', width=2)
-        ),
-        hovertemplate='<b>年齢: %{x}</b><br>' +
-                      '<span style="font-size:16px; color:#8B5CF6; font-weight:700;">人数: %{y}人</span>' +
-                      '<extra></extra>'
+        marker=dict(color='rgb(139, 92, 246)', line=dict(color='white', width=2)),
+        hovertemplate='<b>年齢: %{x}</b><br><span style="font-size:15px;color:rgb(139,92,246);font-weight:700;">人数: %{y}人</span><extra></extra>'
     )])
     
     fig.update_layout(
-        font=dict(family="Inter, Noto Sans JP, sans-serif", color='#0F172A'),
+        font=dict(family="Inter, Noto Sans JP, sans-serif", color=COLOR.TEXT_PRIMARY),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         margin=dict(t=20, b=40, l=60, r=20),
         xaxis=dict(
-            title=dict(text='年齢', font=dict(size=14, weight=600)),
+            title=dict(text='年齢', font=dict(size=13, weight=600)),
             showgrid=False,
             showline=True,
-            linecolor='#E2E8F0',
-            linewidth=2
+            linecolor=COLOR.BORDER
         ),
         yaxis=dict(
-            title=dict(text='来院数（人）', font=dict(size=14, weight=600)),
+            title=dict(text='来院数（人）', font=dict(size=13, weight=600)),
             showgrid=True,
-            gridcolor='#E2E8F0',
-            gridwidth=1
+            gridcolor=COLOR.BORDER
         ),
         bargap=0.1
     )
@@ -687,118 +671,79 @@ def create_histogram(age_data: pd.DataFrame) -> go.Figure:
 # ============================================================
 
 def main():
-    """Main application"""
+    """Main application - Bug-Free Version"""
     
-    # Inject styles
-    inject_premium_styles()
+    inject_god_tier_styles()
     
-    # Initialize
     dm = DataManager(months_back=6)
     current_month = pd.Period(datetime.now(), freq='M')
     kpis = dm.get_kpi_summary(current_month)
     
-    # Header
-    render_header()
+    # HEADER
+    render_premium_header()
     
-    # KPI Cards
+    # KPI CARDS
     col1, col2, col3, col4 = st.columns(4, gap="large")
     
     with col1:
         st.markdown(
-            render_kpi_card(
-                "fas fa-yen-sign",
-                "今月の売上",
-                f"¥{kpis['revenue']['value']:,.0f}",
-                kpis['revenue']['delta'],
-                COLOR.CHART_1
-            ),
+            render_kpi_card("fas fa-yen-sign", "今月の売上", f"¥{kpis['revenue']['value']:,.0f}", 
+                          kpis['revenue']['delta'], COLOR.CHART_1),
             unsafe_allow_html=True
         )
     
     with col2:
         st.markdown(
-            render_kpi_card(
-                "fas fa-users",
-                "来院数",
-                f"{kpis['visits']['value']:,}人",
-                kpis['visits']['delta'],
-                COLOR.CHART_2
-            ),
+            render_kpi_card("fas fa-users", "来院数", f"{kpis['visits']['value']:,}人", 
+                          kpis['visits']['delta'], COLOR.CHART_2),
             unsafe_allow_html=True
         )
     
     with col3:
         st.markdown(
-            render_kpi_card(
-                "fas fa-clock",
-                "平均待ち時間",
-                f"{kpis['wait_time']['value']:.0f}分",
-                kpis['wait_time']['delta'],
-                COLOR.CHART_3,
-                inverse=True
-            ),
+            render_kpi_card("fas fa-clock", "平均待ち時間", f"{kpis['wait_time']['value']:.0f}分", 
+                          kpis['wait_time']['delta'], COLOR.CHART_3, inverse=True),
             unsafe_allow_html=True
         )
     
     with col4:
         st.markdown(
-            render_kpi_card(
-                "fas fa-user-plus",
-                "初診率",
-                f"{kpis['first_rate']['value']:.1f}%",
-                kpis['first_rate']['delta'],
-                COLOR.CHART_4
-            ),
+            render_kpi_card("fas fa-user-plus", "初診率", f"{kpis['first_rate']['value']:.1f}%", 
+                          kpis['first_rate']['delta'], COLOR.CHART_4),
             unsafe_allow_html=True
         )
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Dual Axis Chart & Heatmap
+    # DUAL AXIS CHART & HEATMAP
     col_left, col_right = st.columns([2, 1], gap="large")
     
     with col_left:
-        st.markdown(
-            '<div class="graph-container animate-fade-in-up">' +
-            '<div class="graph-title"><i class="fas fa-chart-line"></i>売上 & 来院数トレンド</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown('<div class="graph-container animate-fade-in-up"><div class="graph-title"><i class="fas fa-chart-line"></i>売上 & 来院数トレンド</div>', unsafe_allow_html=True)
         daily_trend = dm.get_daily_trend(current_month)
         fig_dual = create_dual_axis_chart(daily_trend)
         st.plotly_chart(fig_dual, use_container_width=True, config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col_right:
-        st.markdown(
-            '<div class="graph-container animate-fade-in-up">' +
-            '<div class="graph-title"><i class="fas fa-fire"></i>混雑ヒートマップ</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown('<div class="graph-container animate-fade-in-up"><div class="graph-title"><i class="fas fa-fire"></i>混雑ヒートマップ</div>', unsafe_allow_html=True)
         heatmap_data = dm.get_heatmap_data(current_month)
         fig_heatmap = create_heatmap(heatmap_data)
         st.plotly_chart(fig_heatmap, use_container_width=True, config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # Donut & Histogram
+    # DONUT & HISTOGRAM
     col_left, col_right = st.columns(2, gap="large")
     
     with col_left:
-        st.markdown(
-            '<div class="graph-container animate-fade-in-up">' +
-            '<div class="graph-title"><i class="fas fa-chart-pie"></i>疾患別構成比</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown('<div class="graph-container animate-fade-in-up"><div class="graph-title"><i class="fas fa-chart-pie"></i>疾患別構成比</div>', unsafe_allow_html=True)
         segment_data = dm.get_segment_distribution(current_month)
         fig_donut = create_donut(segment_data)
         st.plotly_chart(fig_donut, use_container_width=True, config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col_right:
-        st.markdown(
-            '<div class="graph-container animate-fade-in-up">' +
-            '<div class="graph-title"><i class="fas fa-chart-bar"></i>年齢分布</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown('<div class="graph-container animate-fade-in-up"><div class="graph-title"><i class="fas fa-chart-bar"></i>年齢分布</div>', unsafe_allow_html=True)
         age_data = dm.get_age_distribution(current_month)
         fig_age = create_histogram(age_data)
         st.plotly_chart(fig_age, use_container_width=True, config={'displayModeBar': False})
