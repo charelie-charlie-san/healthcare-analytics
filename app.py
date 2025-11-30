@@ -1,6 +1,6 @@
 """
 Metro Central Internal Medicine - Executive Dashboard
-God Tier UI/UX | $10M+ Commercial Grade
+God Tier UI/UX | Commercial Grade
 """
 
 import streamlit as st
@@ -16,52 +16,38 @@ from dataclasses import dataclass
 
 @dataclass
 class ColorSystem:
-    """Sophisticated Color Palette - Inspired by Tailwind CSS"""
-    # Backgrounds
-    BG_PRIMARY = "#F1F5F9"      # Slate-100
-    BG_SURFACE = "#FFFFFF"      # Pure White
-    
-    # Brand Colors
-    BRAND_PRIMARY = "#0EA5E9"   # Sky-500
-    BRAND_SECONDARY = "#3B82F6" # Blue-500
-    BRAND_ACCENT = "#8B5CF6"    # Violet-500
-    
-    # Text Colors
-    TEXT_PRIMARY = "#0F172A"    # Slate-900
-    TEXT_SECONDARY = "#475569"  # Slate-600
-    TEXT_MUTED = "#94A3B8"      # Slate-400
-    
-    # Status Colors
-    SUCCESS = "#10B981"         # Emerald-500
-    WARNING = "#F59E0B"         # Amber-500
-    DANGER = "#EF4444"          # Red-500
-    
-    # Chart Colors
-    CHART_1 = "#0EA5E9"         # Sky-500
-    CHART_2 = "#8B5CF6"         # Violet-500
-    CHART_3 = "#EC4899"         # Pink-500
-    CHART_4 = "#F59E0B"         # Amber-500
-    
-    # Utilities
-    BORDER = "#E2E8F0"          # Slate-200
-    SHADOW = "rgba(15, 23, 42, 0.1)"
+    """Sophisticated Color Palette"""
+    BG_PRIMARY = "#F1F5F9"
+    BG_SURFACE = "#FFFFFF"
+    BRAND_PRIMARY = "#0EA5E9"
+    BRAND_SECONDARY = "#3B82F6"
+    BRAND_ACCENT = "#8B5CF6"
+    TEXT_PRIMARY = "#0F172A"
+    TEXT_SECONDARY = "#475569"
+    TEXT_MUTED = "#94A3B8"
+    SUCCESS = "#10B981"
+    DANGER = "#EF4444"
+    CHART_1 = "#0EA5E9"
+    CHART_2 = "#8B5CF6"
+    CHART_3 = "#EC4899"
+    CHART_4 = "#F59E0B"
+    BORDER = "#E2E8F0"
 
 COLOR = ColorSystem()
 
-# Page Configuration
 st.set_page_config(
-    page_title="Metro Central Internal Medicine | Executive Dashboard",
+    page_title="Metro Central Internal Medicine",
     page_icon="🏥",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # ============================================================
-# 2. GOD TIER CSS & TYPOGRAPHY INJECTION
+# 2. GOD TIER CSS INJECTION
 # ============================================================
 
-def inject_god_tier_styles():
-    """Inject sophisticated CSS that transforms Streamlit into a premium web app"""
+def inject_premium_styles():
+    """Inject world-class CSS"""
     
     st.markdown("""
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,10 +58,7 @@ def inject_god_tier_styles():
     
     st.markdown(f"""
     <style>
-        /* ====================================
-           GLOBAL RESET & BASE STYLES
-           ==================================== */
-        
+        /* ========== GLOBAL RESET ========== */
         * {{
             font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif !important;
         }}
@@ -84,82 +67,24 @@ def inject_god_tier_styles():
             background: {COLOR.BG_PRIMARY} !important;
         }}
         
-        /* Remove Streamlit Branding & Padding */
+        /* ========== REMOVE STREAMLIT BRANDING ========== */
         #MainMenu {{visibility: hidden !important;}}
         footer {{visibility: hidden !important;}}
         header {{visibility: hidden !important;}}
         .stDeployButton {{display: none !important;}}
+        button[title="View fullscreen"] {{display: none !important;}}
+        
+        /* Remove hamburger menu */
+        section[data-testid="stSidebar"] > div:first-child {{
+            display: none !important;
+        }}
         
         .main .block-container {{
             padding: 2rem 3rem !important;
             max-width: 100% !important;
         }}
         
-        /* ====================================
-           UTILITY CLASSES (Tailwind-inspired)
-           ==================================== */
-        
-        .card-base {{
-            background: {COLOR.BG_SURFACE};
-            border-radius: 16px;
-            box-shadow: 0 10px 15px -3px {COLOR.SHADOW}, 0 4px 6px -2px {COLOR.SHADOW};
-            padding: 28px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid {COLOR.BORDER};
-            position: relative;
-            overflow: hidden;
-        }}
-        
-        .card-base:hover {{
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px {COLOR.SHADOW}, 0 10px 10px -5px {COLOR.SHADOW};
-        }}
-        
-        .card-base::before {{
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, {COLOR.BRAND_PRIMARY} 0%, {COLOR.BRAND_ACCENT} 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }}
-        
-        .card-base:hover::before {{
-            opacity: 1;
-        }}
-        
-        /* ====================================
-           TYPOGRAPHY SYSTEM
-           ==================================== */
-        
-        .text-slate-900 {{ color: {COLOR.TEXT_PRIMARY}; }}
-        .text-slate-600 {{ color: {COLOR.TEXT_SECONDARY}; }}
-        .text-slate-400 {{ color: {COLOR.TEXT_MUTED}; }}
-        
-        .font-bold {{ font-weight: 700; }}
-        .font-semibold {{ font-weight: 600; }}
-        .font-medium {{ font-weight: 500; }}
-        
-        .text-xs {{ font-size: 0.75rem; line-height: 1rem; }}
-        .text-sm {{ font-size: 0.875rem; line-height: 1.25rem; }}
-        .text-base {{ font-size: 1rem; line-height: 1.5rem; }}
-        .text-lg {{ font-size: 1.125rem; line-height: 1.75rem; }}
-        .text-xl {{ font-size: 1.25rem; line-height: 1.75rem; }}
-        .text-2xl {{ font-size: 1.5rem; line-height: 2rem; }}
-        .text-3xl {{ font-size: 1.875rem; line-height: 2.25rem; }}
-        .text-4xl {{ font-size: 2.25rem; line-height: 2.5rem; }}
-        
-        .uppercase {{ text-transform: uppercase; }}
-        .tracking-wide {{ letter-spacing: 0.025em; }}
-        .tracking-wider {{ letter-spacing: 0.05em; }}
-        
-        /* ====================================
-           HEADER COMPONENT
-           ==================================== */
-        
+        /* ========== HEADER COMPONENT ========== */
         .dashboard-header {{
             display: flex;
             justify-content: space-between;
@@ -168,7 +93,7 @@ def inject_god_tier_styles():
             padding: 2rem;
             background: {COLOR.BG_SURFACE};
             border-radius: 16px;
-            box-shadow: 0 4px 6px -1px {COLOR.SHADOW};
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
             border-left: 6px solid {COLOR.BRAND_PRIMARY};
         }}
         
@@ -189,14 +114,14 @@ def inject_god_tier_styles():
         .clinic-title {{
             font-size: 1.875rem;
             font-weight: 800;
-            color: {COLOR.TEXT_PRIMARY};
+            color: {COLOR.TEXT_PRIMARY} !important;
             margin: 0;
             line-height: 1.2;
         }}
         
         .clinic-subtitle {{
             font-size: 0.875rem;
-            color: {COLOR.TEXT_SECONDARY};
+            color: {COLOR.TEXT_SECONDARY} !important;
             margin-top: 0.25rem;
             font-weight: 500;
         }}
@@ -220,15 +145,12 @@ def inject_god_tier_styles():
             margin-top: 0.25rem;
         }}
         
-        /* ====================================
-           KPI CARD COMPONENT
-           ==================================== */
-        
+        /* ========== KPI CARD ========== */
         .kpi-card {{
             background: {COLOR.BG_SURFACE};
             border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 10px 15px -3px {COLOR.SHADOW}, 0 4px 6px -2px {COLOR.SHADOW};
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
@@ -238,24 +160,7 @@ def inject_god_tier_styles():
         
         .kpi-card:hover {{
             transform: translateY(-6px) scale(1.02);
-            box-shadow: 0 25px 50px -12px {COLOR.SHADOW};
-        }}
-        
-        .kpi-card::after {{
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background: linear-gradient(135deg, transparent 0%, {COLOR.BRAND_PRIMARY}08 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }}
-        
-        .kpi-card:hover::after {{
-            opacity: 1;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
         }}
         
         .kpi-icon-wrapper {{
@@ -290,10 +195,6 @@ def inject_god_tier_styles():
             color: {COLOR.TEXT_PRIMARY};
             line-height: 1.2;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg, {COLOR.TEXT_PRIMARY} 0%, {COLOR.TEXT_SECONDARY} 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }}
         
         .kpi-delta-container {{
@@ -314,12 +215,12 @@ def inject_god_tier_styles():
         }}
         
         .trend-badge.positive {{
-            background: {COLOR.SUCCESS}20;
+            background: rgba(16, 185, 129, 0.15);
             color: {COLOR.SUCCESS};
         }}
         
         .trend-badge.negative {{
-            background: {COLOR.DANGER}20;
+            background: rgba(239, 68, 68, 0.15);
             color: {COLOR.DANGER};
         }}
         
@@ -338,22 +239,19 @@ def inject_god_tier_styles():
             font-weight: 500;
         }}
         
-        /* ====================================
-           GRAPH CONTAINER
-           ==================================== */
-        
+        /* ========== GRAPH CONTAINER ========== */
         .graph-container {{
             background: {COLOR.BG_SURFACE};
             border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 10px 15px -3px {COLOR.SHADOW}, 0 4px 6px -2px {COLOR.SHADOW};
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
             border: 1px solid {COLOR.BORDER};
             margin-bottom: 2rem;
             transition: all 0.3s ease;
         }}
         
         .graph-container:hover {{
-            box-shadow: 0 20px 25px -5px {COLOR.SHADOW}, 0 10px 10px -5px {COLOR.SHADOW};
+            box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.15), 0 10px 10px -5px rgba(15, 23, 42, 0.1);
         }}
         
         .graph-title {{
@@ -370,10 +268,7 @@ def inject_god_tier_styles():
             color: {COLOR.BRAND_PRIMARY};
         }}
         
-        /* ====================================
-           ANIMATIONS
-           ==================================== */
-        
+        /* ========== ANIMATIONS ========== */
         @keyframes fadeInUp {{
             from {{
                 opacity: 0;
@@ -389,23 +284,7 @@ def inject_god_tier_styles():
             animation: fadeInUp 0.6s ease-out forwards;
         }}
         
-        @keyframes pulse {{
-            0%, 100% {{
-                opacity: 1;
-            }}
-            50% {{
-                opacity: 0.8;
-            }}
-        }}
-        
-        .animate-pulse {{
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }}
-        
-        /* ====================================
-           RESPONSIVE DESIGN
-           ==================================== */
-        
+        /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {{
             .dashboard-header {{
                 flex-direction: column;
@@ -421,54 +300,43 @@ def inject_god_tier_styles():
     """, unsafe_allow_html=True)
 
 # ============================================================
-# 3. DATA MANAGER (Business Logic)
+# 3. DATA MANAGER
 # ============================================================
 
 class DataManager:
-    """Sophisticated data generation with realistic medical practice patterns"""
+    """Business logic for data generation"""
     
     def __init__(self, months_back: int = 6, seed: int = 42):
         self.months_back = months_back
         np.random.seed(seed)
-        self.data = self._generate_realistic_data()
+        self.data = self._generate_data()
     
-    def _generate_realistic_data(self) -> pd.DataFrame:
-        """Generate highly realistic clinic data with complex patterns"""
+    def _generate_data(self) -> pd.DataFrame:
+        """Generate realistic clinic data"""
         end_date = datetime.now()
         start_date = end_date - timedelta(days=30 * self.months_back)
-        
         date_range = pd.date_range(start=start_date, end=end_date, freq='D')
         records = []
         
         for date in date_range:
-            if date.weekday() == 6:  # Skip Sundays
+            if date.weekday() == 6:
                 continue
             
-            # Base patient count with Poisson distribution
             base_lambda = 60
-            
-            # Monday rush (1.2x), Thu/Sat half-day (0.6x)
             weekday_coef = {0: 1.2, 3: 0.6, 5: 0.6}.get(date.weekday(), 1.0)
-            
-            # Random rainy day (5% chance, 0.8x patients)
             rain_coef = 0.8 if np.random.random() < 0.05 else 1.0
-            
-            # Seasonal effect (winter: +50% acute cases)
-            seasonal_boost = 1.5 if date.month in [12, 1, 2] else 1.0
             
             adjusted_lambda = base_lambda * weekday_coef * rain_coef
             daily_patients = int(np.random.poisson(adjusted_lambda))
             daily_patients = max(15, min(95, daily_patients))
             
             for _ in range(daily_patients):
-                # Patient segment (Case Mix)
                 segment_prob = [0.4, 0.5, 0.1]
-                if date.month in [12, 1, 2]:  # Winter: more acute cases
+                if date.month in [12, 1, 2]:
                     segment_prob = [0.35, 0.6, 0.05]
                 
                 segment = np.random.choice(['lifestyle', 'acute', 'checkup'], p=segment_prob)
                 
-                # Revenue & visit type by segment
                 if segment == 'lifestyle':
                     revenue = int(np.random.normal(5000, 1200))
                     revenue = max(3000, min(9000, revenue))
@@ -477,14 +345,13 @@ class DataManager:
                     revenue = int(np.random.normal(2800, 600))
                     revenue = max(1800, min(5000, revenue))
                     visit_type = '初診' if np.random.random() < 0.35 else '再診'
-                else:  # checkup
-                    if date.weekday() != 5:  # Checkups mostly on Saturday
+                else:
+                    if date.weekday() != 5:
                         continue
                     revenue = int(np.random.normal(16000, 2500))
                     revenue = max(12000, min(22000, revenue))
                     visit_type = '検診'
                 
-                # Age distribution by segment
                 age_params = {
                     'lifestyle': (58, 12),
                     'acute': (40, 18),
@@ -493,7 +360,6 @@ class DataManager:
                 age = int(np.random.normal(*age_params[segment]))
                 age = max(22, min(82, age))
                 
-                # Visit hour with realistic distribution
                 hour = np.random.choice(
                     [9, 10, 11, 12, 14, 15, 16, 17],
                     p=[0.08, 0.16, 0.24, 0.09, 0.11, 0.21, 0.08, 0.03]
@@ -512,7 +378,6 @@ class DataManager:
         df = pd.DataFrame(records)
         df['date'] = pd.to_datetime(df['date'])
         
-        # Calculate wait time (quadratic relationship with patient load)
         daily_counts = df.groupby('date').size()
         df['wait_time'] = df['date'].map(
             lambda d: int(((daily_counts.get(d, 0) / 60) ** 2) * 35)
@@ -522,7 +387,7 @@ class DataManager:
         return df
     
     def get_kpi_summary(self, target_month: pd.Period) -> dict:
-        """Calculate executive KPIs with month-over-month comparison"""
+        """Calculate KPIs"""
         df_curr = self.data[self.data['date'].dt.to_period('M') == target_month]
         df_prev = self.data[self.data['date'].dt.to_period('M') == (target_month - 1)]
         
@@ -550,7 +415,7 @@ class DataManager:
         }
     
     def get_daily_trend(self, target_month: pd.Period) -> pd.DataFrame:
-        """Daily revenue and visits aggregation"""
+        """Daily aggregation"""
         df_month = self.data[self.data['date'].dt.to_period('M') == target_month]
         return df_month.groupby('date').agg({
             'revenue': 'sum',
@@ -558,13 +423,13 @@ class DataManager:
         }).rename(columns={'date': 'visits'}).reset_index()
     
     def get_heatmap_data(self, target_month: pd.Period) -> pd.DataFrame:
-        """Congestion heatmap (weekday × hour)"""
+        """Heatmap data"""
         df_month = self.data[self.data['date'].dt.to_period('M') == target_month]
         heatmap = df_month.groupby(['weekday', 'hour']).size().reset_index(name='count')
         return heatmap.pivot(index='hour', columns='weekday', values='count').fillna(0)
     
     def get_segment_distribution(self, target_month: pd.Period) -> pd.DataFrame:
-        """Patient segment breakdown"""
+        """Segment breakdown"""
         df_month = self.data[self.data['date'].dt.to_period('M') == target_month]
         segment_map = {'lifestyle': '生活習慣病', 'acute': '急性疾患', 'checkup': '検診・ドック'}
         dist = df_month['segment'].value_counts().reset_index()
@@ -573,16 +438,16 @@ class DataManager:
         return dist
     
     def get_age_distribution(self, target_month: pd.Period) -> pd.DataFrame:
-        """Age distribution for histogram"""
+        """Age distribution"""
         df_month = self.data[self.data['date'].dt.to_period('M') == target_month]
         return df_month[['age']]
 
 # ============================================================
-# 4. UI COMPONENTS (HTML Rendering)
+# 4. UI COMPONENTS
 # ============================================================
 
-def render_premium_header():
-    """Render a sophisticated header with logo and timestamp"""
+def render_header():
+    """Render premium header"""
     now = datetime.now()
     
     st.markdown(f"""
@@ -604,10 +469,9 @@ def render_premium_header():
     </div>
     """, unsafe_allow_html=True)
 
-def render_god_tier_kpi_card(icon: str, label: str, value: str, delta: float, 
-                              color: str, inverse: bool = False):
-    """Render ultimate KPI card with sophisticated design"""
-    
+def render_kpi_card(icon: str, label: str, value: str, delta: float, 
+                    color: str, inverse: bool = False):
+    """Render KPI card"""
     is_positive = (delta >= 0 and not inverse) or (delta < 0 and inverse)
     badge_class = "positive" if is_positive else "negative"
     arrow = "fa-arrow-up" if delta >= 0 else "fa-arrow-down"
@@ -631,45 +495,44 @@ def render_god_tier_kpi_card(icon: str, label: str, value: str, delta: float,
     """
 
 # ============================================================
-# 5. PLOTLY VISUALIZATION (Beyond Default)
+# 5. PLOTLY CHARTS (FIXED)
 # ============================================================
 
-def create_god_tier_dual_axis_chart(daily_data: pd.DataFrame) -> go.Figure:
-    """Premium dual-axis chart with gradient fill and rich tooltips"""
-    
+def create_dual_axis_chart(daily_data: pd.DataFrame) -> go.Figure:
+    """Dual-axis chart with FIXED colors"""
     fig = go.Figure()
     
-    # Area chart for visits with gradient fill
+    # Area chart - FIXED: rgba format
     fig.add_trace(go.Scatter(
         x=daily_data['date'],
         y=daily_data['visits'],
         name='来院数',
         mode='lines',
-        line=dict(color=COLOR.CHART_1, width=3),
+        line=dict(color='#0EA5E9', width=3),
         fill='tozeroy',
         fillcolor='rgba(14, 165, 233, 0.2)',
         yaxis='y',
         hovertemplate='<b>%{x|%m/%d}</b><br>' +
-                      f'<span style="font-size:16px; color:{COLOR.CHART_1}; font-weight:700;">来院数: %{{y}}人</span>' +
+                      '<span style="font-size:16px; color:#0EA5E9; font-weight:700;">来院数: %{y}人</span>' +
                       '<extra></extra>'
     ))
     
-    # Line chart for revenue with markers
+    # Line chart
     fig.add_trace(go.Scatter(
         x=daily_data['date'],
         y=daily_data['revenue'],
         name='売上',
         mode='lines+markers',
-        line=dict(color=COLOR.CHART_2, width=4),
-        marker=dict(size=8, color=COLOR.CHART_2, line=dict(width=2, color='white')),
+        line=dict(color='#8B5CF6', width=4),
+        marker=dict(size=8, color='#8B5CF6', line=dict(width=2, color='white')),
         yaxis='y2',
         hovertemplate='<b>%{x|%m/%d}</b><br>' +
-                      f'<span style="font-size:16px; color:{COLOR.CHART_2}; font-weight:700;">売上: ¥%{{y:,.0f}}</span>' +
+                      '<span style="font-size:16px; color:#8B5CF6; font-weight:700;">売上: ¥%{y:,.0f}</span>' +
                       '<extra></extra>'
     ))
     
     fig.update_layout(
-        font=dict(family="Inter, Noto Sans JP, sans-serif", color=COLOR.TEXT_PRIMARY),
+        font=dict(family="Inter, Noto Sans JP, sans-serif", color='#0F172A'),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         margin=dict(t=20, b=40, l=60, r=60),
@@ -686,7 +549,7 @@ def create_god_tier_dual_axis_chart(daily_data: pd.DataFrame) -> go.Figure:
         yaxis=dict(
             title=dict(text='来院数（人）', font=dict(size=14, weight=600)),
             showgrid=True,
-            gridcolor=COLOR.BORDER,
+            gridcolor='#E2E8F0',
             gridwidth=1,
             zeroline=False
         ),
@@ -699,16 +562,15 @@ def create_god_tier_dual_axis_chart(daily_data: pd.DataFrame) -> go.Figure:
         xaxis=dict(
             showgrid=False,
             showline=True,
-            linecolor=COLOR.BORDER,
+            linecolor='#E2E8F0',
             linewidth=2
         )
     )
     
     return fig
 
-def create_god_tier_heatmap(heatmap_data: pd.DataFrame) -> go.Figure:
-    """Premium heatmap with gap styling and rich tooltips"""
-    
+def create_heatmap(heatmap_data: pd.DataFrame) -> go.Figure:
+    """Heatmap with gap styling"""
     weekday_labels = ['月', '火', '水', '木', '金', '土']
     
     fig = go.Figure(data=go.Heatmap(
@@ -727,7 +589,7 @@ def create_god_tier_heatmap(heatmap_data: pd.DataFrame) -> go.Figure:
         xgap=2,
         ygap=2,
         hovertemplate='<b>%{x} %{y}</b><br>' +
-                      f'<span style="font-size:16px; color:{COLOR.CHART_1}; font-weight:700;">来院数: %{{z}}人</span>' +
+                      '<span style="font-size:16px; color:#0EA5E9; font-weight:700;">来院数: %{z}人</span>' +
                       '<extra></extra>',
         colorbar=dict(
             title=dict(text='来院数', font=dict(size=12, weight=600)),
@@ -737,7 +599,7 @@ def create_god_tier_heatmap(heatmap_data: pd.DataFrame) -> go.Figure:
     ))
     
     fig.update_layout(
-        font=dict(family="Inter, Noto Sans JP, sans-serif", color=COLOR.TEXT_PRIMARY),
+        font=dict(family="Inter, Noto Sans JP, sans-serif", color='#0F172A'),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         margin=dict(t=20, b=40, l=60, r=20),
@@ -747,10 +609,9 @@ def create_god_tier_heatmap(heatmap_data: pd.DataFrame) -> go.Figure:
     
     return fig
 
-def create_god_tier_donut(segment_data: pd.DataFrame) -> go.Figure:
-    """Premium donut chart with sophisticated styling"""
-    
-    colors = [COLOR.CHART_1, COLOR.CHART_2, COLOR.CHART_3]
+def create_donut(segment_data: pd.DataFrame) -> go.Figure:
+    """Donut chart"""
+    colors = ['#0EA5E9', '#8B5CF6', '#EC4899']
     
     fig = go.Figure(data=[go.Pie(
         labels=segment_data['segment'],
@@ -768,7 +629,7 @@ def create_god_tier_donut(segment_data: pd.DataFrame) -> go.Figure:
     )])
     
     fig.update_layout(
-        font=dict(family="Inter, Noto Sans JP, sans-serif", color=COLOR.TEXT_PRIMARY),
+        font=dict(family="Inter, Noto Sans JP, sans-serif", color='#0F172A'),
         paper_bgcolor='rgba(0,0,0,0)',
         margin=dict(t=20, b=20, l=20, r=20),
         showlegend=True,
@@ -784,23 +645,22 @@ def create_god_tier_donut(segment_data: pd.DataFrame) -> go.Figure:
     
     return fig
 
-def create_god_tier_histogram(age_data: pd.DataFrame) -> go.Figure:
-    """Premium age distribution histogram"""
-    
+def create_histogram(age_data: pd.DataFrame) -> go.Figure:
+    """Age histogram"""
     fig = go.Figure(data=[go.Histogram(
         x=age_data['age'],
         nbinsx=13,
         marker=dict(
-            color=COLOR.CHART_2,
+            color='#8B5CF6',
             line=dict(color='white', width=2)
         ),
         hovertemplate='<b>年齢: %{x}</b><br>' +
-                      f'<span style="font-size:16px; color:{COLOR.CHART_2}; font-weight:700;">人数: %{{y}}人</span>' +
+                      '<span style="font-size:16px; color:#8B5CF6; font-weight:700;">人数: %{y}人</span>' +
                       '<extra></extra>'
     )])
     
     fig.update_layout(
-        font=dict(family="Inter, Noto Sans JP, sans-serif", color=COLOR.TEXT_PRIMARY),
+        font=dict(family="Inter, Noto Sans JP, sans-serif", color='#0F172A'),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         margin=dict(t=20, b=40, l=60, r=20),
@@ -808,13 +668,13 @@ def create_god_tier_histogram(age_data: pd.DataFrame) -> go.Figure:
             title=dict(text='年齢', font=dict(size=14, weight=600)),
             showgrid=False,
             showline=True,
-            linecolor=COLOR.BORDER,
+            linecolor='#E2E8F0',
             linewidth=2
         ),
         yaxis=dict(
             title=dict(text='来院数（人）', font=dict(size=14, weight=600)),
             showgrid=True,
-            gridcolor=COLOR.BORDER,
+            gridcolor='#E2E8F0',
             gridwidth=1
         ),
         bargap=0.1
@@ -827,27 +687,25 @@ def create_god_tier_histogram(age_data: pd.DataFrame) -> go.Figure:
 # ============================================================
 
 def main():
-    """Main application orchestration"""
+    """Main application"""
     
-    # Inject God Tier Styles
-    inject_god_tier_styles()
+    # Inject styles
+    inject_premium_styles()
     
-    # Initialize Data Manager
+    # Initialize
     dm = DataManager(months_back=6)
     current_month = pd.Period(datetime.now(), freq='M')
-    
-    # Get KPIs
     kpis = dm.get_kpi_summary(current_month)
     
-    # ========== HEADER ==========
-    render_premium_header()
+    # Header
+    render_header()
     
-    # ========== ROW 1: KPI CARDS ==========
+    # KPI Cards
     col1, col2, col3, col4 = st.columns(4, gap="large")
     
     with col1:
         st.markdown(
-            render_god_tier_kpi_card(
+            render_kpi_card(
                 "fas fa-yen-sign",
                 "今月の売上",
                 f"¥{kpis['revenue']['value']:,.0f}",
@@ -859,7 +717,7 @@ def main():
     
     with col2:
         st.markdown(
-            render_god_tier_kpi_card(
+            render_kpi_card(
                 "fas fa-users",
                 "来院数",
                 f"{kpis['visits']['value']:,}人",
@@ -871,7 +729,7 @@ def main():
     
     with col3:
         st.markdown(
-            render_god_tier_kpi_card(
+            render_kpi_card(
                 "fas fa-clock",
                 "平均待ち時間",
                 f"{kpis['wait_time']['value']:.0f}分",
@@ -884,7 +742,7 @@ def main():
     
     with col4:
         st.markdown(
-            render_god_tier_kpi_card(
+            render_kpi_card(
                 "fas fa-user-plus",
                 "初診率",
                 f"{kpis['first_rate']['value']:.1f}%",
@@ -896,7 +754,7 @@ def main():
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # ========== ROW 2: DUAL AXIS CHART & HEATMAP ==========
+    # Dual Axis Chart & Heatmap
     col_left, col_right = st.columns([2, 1], gap="large")
     
     with col_left:
@@ -906,7 +764,7 @@ def main():
             unsafe_allow_html=True
         )
         daily_trend = dm.get_daily_trend(current_month)
-        fig_dual = create_god_tier_dual_axis_chart(daily_trend)
+        fig_dual = create_dual_axis_chart(daily_trend)
         st.plotly_chart(fig_dual, use_container_width=True, config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
     
@@ -917,11 +775,11 @@ def main():
             unsafe_allow_html=True
         )
         heatmap_data = dm.get_heatmap_data(current_month)
-        fig_heatmap = create_god_tier_heatmap(heatmap_data)
+        fig_heatmap = create_heatmap(heatmap_data)
         st.plotly_chart(fig_heatmap, use_container_width=True, config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # ========== ROW 3: DONUT & HISTOGRAM ==========
+    # Donut & Histogram
     col_left, col_right = st.columns(2, gap="large")
     
     with col_left:
@@ -931,7 +789,7 @@ def main():
             unsafe_allow_html=True
         )
         segment_data = dm.get_segment_distribution(current_month)
-        fig_donut = create_god_tier_donut(segment_data)
+        fig_donut = create_donut(segment_data)
         st.plotly_chart(fig_donut, use_container_width=True, config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
     
@@ -942,7 +800,7 @@ def main():
             unsafe_allow_html=True
         )
         age_data = dm.get_age_distribution(current_month)
-        fig_age = create_god_tier_histogram(age_data)
+        fig_age = create_histogram(age_data)
         st.plotly_chart(fig_age, use_container_width=True, config={'displayModeBar': False})
         st.markdown('</div>', unsafe_allow_html=True)
 
