@@ -1,0 +1,129 @@
+# ========================================
+# 🔒 絶対に公開してはいけないファイル
+# ========================================
+
+# 環境変数・秘密情報（APIキー、パスワードなど）
+.env
+.env.local
+.env.*.local
+*.env
+config.py
+secrets.toml
+.streamlit/secrets.toml
+
+# 個人情報・機密データ
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+token.json
+GITHUB_TOKEN_メモ.txt
+
+# ========================================
+# 🐍 Python関連（Anaconda含む）
+# ========================================
+
+# Pythonキャッシュ
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 仮想環境
+venv/
+env/
+ENV/
+.venv
+.conda/
+anaconda/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+
+# ========================================
+# 💻 Mac/Windows/Linuxのシステムファイル
+# ========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+
+# ========================================
+# 📝 エディタ・IDE
+# ========================================
+
+# VSCode / Cursor
+.vscode/
+.cursor/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# ========================================
+# 📦 ビルド・一時ファイル
+# ========================================
+
+# ログファイル
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 一時ファイル
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# ========================================
+# 🎨 プロジェクト固有（必要に応じて調整）
+# ========================================
+
+# 大容量データファイル（GitHubは100MB以上NG）
+# data.csv は小さいので公開OK
+# もし大きなファイルがあればここに追加：
+# large_data.csv
+# *.xlsx
+# *.zip
+
+# テスト用ファイル
+test_output/
+scratch.py
+
