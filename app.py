@@ -1,493 +1,616 @@
+"""
+Metro Central Internal Medicine - Executive Dashboard
+Commercial Grade | Streamlit Application
+"""
+
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
 import plotly.graph_objects as go
+import plotly.express as px
 from datetime import datetime, timedelta
-import random
+from dataclasses import dataclass
 
-# ページ設定
+# ============================================================
+# 1. CONFIG & STYLE
+# ============================================================
+
+@dataclass
+class ColorPalette:
+    """Medical Pro Design System"""
+    BACKGROUND = "#F4F6F9"
+    CARD_SURFACE = "#FFFFFF"
+    PRIMARY = "#0EA5E9"
+    SECONDARY = "#64748B"
+    ACCENT = "#F43F5E"
+    TEXT = "#1E293B"
+    GRID = "#E2E8F0"
+    SUCCESS = "#10B981"
+    WARNING = "#F59E0B"
+
+COLOR = ColorPalette()
+
+# Page Configuration
 st.set_page_config(
-    page_title="クリニック経営分析ダッシュボード",
+    page_title="Metro Central Internal Medicine",
     page_icon="🏥",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# カスタムCSS - 清潔感のある医療系デザイン
-st.markdown("""
+# Custom CSS Injection
+st.markdown(f"""
 <style>
-    /* 全体の背景 */
-    .stApp {
-        background-color: #f8f9fa;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     
-    /* メトリックカードのスタイル */
-    [data-testid="stMetricValue"] {
+    /* Base Overrides */
+    .stApp {{
+        background-color: {COLOR.BACKGROUND} !important;
+        font-family: 'Inter', 'Noto Sans JP', sans-serif !important;
+    }}
+    
+    .css-1d391kg, .main .block-container {{
+        padding: 2rem 3rem !important;
+        max-width: 100% !important;
+    }}
+    
+    /* Hide Streamlit Branding */
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
+    header {{visibility: hidden;}}
+    
+    /* Custom KPI Card */
+    .kpi-card {{
+        background: {COLOR.CARD_SURFACE};
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        height: 100%;
+    }}
+    
+    .kpi-card:hover {{
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }}
+    
+    .kpi-icon {{
         font-size: 2rem;
-        color: #0056b3;
-        font-weight: 600;
-    }
+        margin-bottom: 0.5rem;
+    }}
     
-    [data-testid="stMetricLabel"] {
-        font-size: 1rem;
-        color: #495057;
+    .kpi-label {{
+        color: {COLOR.SECONDARY};
+        font-size: 0.875rem;
         font-weight: 500;
-    }
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }}
     
-    /* サイドバーのスタイル */
-    [data-testid="stSidebar"] {
-        background-color: #ffffff;
-        border-right: 1px solid #dee2e6;
-    }
-    
-    /* ヘッダー */
-    h1 {
-        color: #0056b3;
+    .kpi-value {{
+        color: {COLOR.TEXT};
+        font-size: 2rem;
         font-weight: 700;
-        padding-bottom: 1rem;
-        border-bottom: 3px solid #0056b3;
-    }
+        line-height: 1.2;
+        margin-bottom: 0.5rem;
+    }}
     
-    h2 {
-        color: #495057;
+    .kpi-delta {{
+        font-size: 0.875rem;
         font-weight: 600;
-        margin-top: 2rem;
-    }
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }}
     
-    h3 {
-        color: #6c757d;
+    .kpi-delta.positive {{
+        color: {COLOR.SUCCESS};
+    }}
+    
+    .kpi-delta.negative {{
+        color: {COLOR.ACCENT};
+    }}
+    
+    /* Header Styles */
+    .dashboard-header {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid {COLOR.PRIMARY};
+    }}
+    
+    .clinic-title {{
+        color: {COLOR.TEXT};
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }}
+    
+    .last-updated {{
+        color: {COLOR.SECONDARY};
+        font-size: 0.875rem;
         font-weight: 500;
-    }
+    }}
+    
+    /* Graph Container */
+    .graph-container {{
+        background: {COLOR.CARD_SURFACE};
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        margin-bottom: 1.5rem;
+    }}
+    
+    /* Remove default margins */
+    .element-container {{
+        margin: 0 !important;
+    }}
 </style>
 """, unsafe_allow_html=True)
 
-# ダミーデータ生成関数
-@st.cache_data
-def generate_clinic_data():
-    """
-    都心の総合内科クリニックのダミーデータを生成
-    - 医師1名、1日平均60人前後
-    - 6ヶ月分のデータ
-    """
-    np.random.seed(42)
-    random.seed(42)
+# ============================================================
+# 2. DATA MANAGER
+# ============================================================
+
+class DataManager:
+    """Encapsulates all data generation and aggregation logic"""
     
-    # 6ヶ月前から今日まで
-    end_date = datetime.now()
-    start_date = end_date - timedelta(days=180)
-    
-    # 全日付を生成
-    all_dates = pd.date_range(start=start_date, end=end_date, freq='D')
-    
-    data = []
-    
-    for date in all_dates:
-        # 休診日の判定（日曜日、祝日想定）
-        if date.weekday() == 6:  # 日曜日
-            continue
+    def __init__(self, months_back: int = 6, seed: int = 42):
+        self.months_back = months_back
+        np.random.seed(seed)
+        self.data = self._generate_data()
         
-        # 木曜日・土曜日は午前のみ（来院数少なめ）
-        if date.weekday() in [3, 5]:  # 木曜日、土曜日
-            base_patients = 30
-        else:
-            base_patients = 60
+    def _generate_data(self) -> pd.DataFrame:
+        """Generate realistic clinic data with sophisticated logic"""
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=30 * self.months_back)
         
-        # 日ごとの来院数にランダムな揺らぎ
-        daily_patients = int(np.random.normal(base_patients, 10))
-        daily_patients = max(20, min(80, daily_patients))  # 20〜80人の範囲
+        date_range = pd.date_range(start=start_date, end=end_date, freq='D')
+        records = []
         
-        # その日の患者データを生成
-        for _ in range(daily_patients):
-            # 初診 vs 再診（初診2:再診8）
-            visit_type = np.random.choice(['初診', '再診'], p=[0.2, 0.8])
+        for date in date_range:
+            # Skip Sundays
+            if date.weekday() == 6:
+                continue
             
-            # 年齢分布（都心オフィス街、働き盛りが中心）
-            age_distribution = np.random.choice(
-                [25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75],
-                p=[0.05, 0.15, 0.20, 0.20, 0.15, 0.10, 0.08, 0.04, 0.02, 0.005, 0.005]
-            )
-            age = int(np.random.normal(age_distribution, 5))
-            age = max(20, min(85, age))
+            # Base patient count (Poisson distribution λ=60)
+            base_lambda = 60
             
-            # 性別
-            gender = np.random.choice(['男性', '女性'], p=[0.48, 0.52])
-            
-            # 保険種別（都心オフィス街なので社保が多い）
-            if age >= 75:
-                insurance_type = '後期高齢'
-            elif age >= 65:
-                insurance_type = np.random.choice(['社保', '国保', '後期高齢'], p=[0.4, 0.5, 0.1])
+            # Weekday coefficient
+            weekday = date.weekday()
+            if weekday == 0:  # Monday
+                weekday_coef = 1.2
+            elif weekday in [3, 5]:  # Thursday, Saturday
+                weekday_coef = 0.6
             else:
-                insurance_type = np.random.choice(['社保', '国保'], p=[0.75, 0.25])
+                weekday_coef = 1.0
             
-            # 売上（診療報酬点数ベース）
-            if visit_type == '初診':
-                # 初診は平均3,500円（2,000〜5,000円の範囲）
-                revenue = int(np.random.normal(3500, 800))
-                revenue = max(2000, min(5000, revenue))
-            else:
-                # 再診は平均1,500円（800〜2,500円の範囲）
-                revenue = int(np.random.normal(1500, 400))
-                revenue = max(800, min(2500, revenue))
+            # Random "rainy day" effect (5% chance)
+            is_rainy = np.random.random() < 0.05
+            rain_coef = 0.8 if is_rainy else 1.0
             
-            # 時間帯（9時〜18時、ピークは11時と15時）
-            hour_distribution = np.random.choice(
-                [9, 10, 11, 12, 14, 15, 16, 17, 18],
-                p=[0.08, 0.15, 0.20, 0.12, 0.10, 0.18, 0.10, 0.05, 0.02]
-            )
+            # Seasonal effect (winter boost for acute cases)
+            month = date.month
+            seasonal_coef = 1.5 if month in [12, 1, 2] else 1.0
             
-            data.append({
-                'visit_date': date,
-                'visit_type': visit_type,
-                'age': age,
-                'gender': gender,
-                'insurance_type': insurance_type,
-                'revenue': revenue,
-                'hour': hour_distribution,
-                'weekday': date.strftime('%A'),
-                'weekday_jp': ['月', '火', '水', '木', '金', '土', '日'][date.weekday()]
-            })
+            # Final patient count
+            adjusted_lambda = base_lambda * weekday_coef * rain_coef
+            daily_patients = int(np.random.poisson(adjusted_lambda))
+            daily_patients = max(10, min(100, daily_patients))
+            
+            # Generate individual patient records
+            for i in range(daily_patients):
+                # Patient segment (Case Mix)
+                segment = np.random.choice(
+                    ['lifestyle', 'acute', 'checkup'],
+                    p=[0.4, 0.5, 0.1]
+                )
+                
+                # Adjust acute cases for winter
+                if segment == 'acute' and month in [12, 1, 2]:
+                    segment = 'acute' if np.random.random() < 0.75 else segment
+                
+                # Revenue based on segment
+                if segment == 'lifestyle':
+                    revenue = int(np.random.normal(5000, 1000))
+                    revenue = max(3000, min(8000, revenue))
+                    visit_type = '再診' if np.random.random() < 0.9 else '初診'
+                elif segment == 'acute':
+                    revenue = int(np.random.normal(2500, 500))
+                    revenue = max(1500, min(4000, revenue))
+                    visit_type = '初診' if np.random.random() < 0.4 else '再診'
+                else:  # checkup
+                    revenue = int(np.random.normal(15000, 2000))
+                    revenue = max(10000, min(20000, revenue))
+                    visit_type = '検診'
+                    # Checkups concentrate on Saturday
+                    if weekday != 5:
+                        continue
+                
+                # Age distribution by segment
+                if segment == 'lifestyle':
+                    age = int(np.random.normal(55, 10))
+                elif segment == 'acute':
+                    age = int(np.random.normal(38, 15))
+                else:  # checkup
+                    age = int(np.random.normal(45, 8))
+                age = max(20, min(85, age))
+                
+                # Gender
+                gender = np.random.choice(['男性', '女性'], p=[0.48, 0.52])
+                
+                # Visit hour distribution
+                hour = np.random.choice(
+                    [9, 10, 11, 12, 14, 15, 16, 17],
+                    p=[0.08, 0.15, 0.22, 0.10, 0.12, 0.20, 0.10, 0.03]
+                )
+                
+                records.append({
+                    'date': date,
+                    'segment': segment,
+                    'visit_type': visit_type,
+                    'age': age,
+                    'gender': gender,
+                    'revenue': revenue,
+                    'hour': hour,
+                    'weekday': weekday,
+                    'is_rainy': is_rainy
+                })
+        
+        df = pd.DataFrame(records)
+        df['date'] = pd.to_datetime(df['date'])
+        
+        # Calculate wait time (exponential relationship with patient count)
+        daily_counts = df.groupby('date').size()
+        physician_capacity = 60
+        df['wait_time'] = df['date'].map(
+            lambda d: int(((daily_counts.get(d, 0) / physician_capacity) ** 2) * 30)
+        )
+        df['wait_time'] = df['wait_time'].clip(5, 120)  # 5-120 minutes
+        
+        return df
     
-    df = pd.DataFrame(data)
-    df['visit_date'] = pd.to_datetime(df['visit_date'])
-    df['year_month'] = df['visit_date'].dt.to_period('M')
+    def get_monthly_summary(self, target_month: pd.Period) -> dict:
+        """Calculate monthly KPIs"""
+        df_month = self.data[self.data['date'].dt.to_period('M') == target_month]
+        
+        # Previous month for comparison
+        prev_month = target_month - 1
+        df_prev = self.data[self.data['date'].dt.to_period('M') == prev_month]
+        
+        total_revenue = df_month['revenue'].sum()
+        prev_revenue = df_prev['revenue'].sum()
+        revenue_delta = ((total_revenue - prev_revenue) / prev_revenue * 100) if prev_revenue > 0 else 0
+        
+        total_visits = len(df_month)
+        prev_visits = len(df_prev)
+        visits_delta = ((total_visits - prev_visits) / prev_visits * 100) if prev_visits > 0 else 0
+        
+        avg_wait = df_month['wait_time'].mean()
+        prev_wait = df_prev['wait_time'].mean()
+        wait_delta = ((avg_wait - prev_wait) / prev_wait * 100) if prev_wait > 0 else 0
+        
+        first_visit_rate = (df_month['visit_type'] == '初診').sum() / total_visits * 100 if total_visits > 0 else 0
+        prev_first_rate = (df_prev['visit_type'] == '初診').sum() / prev_visits * 100 if prev_visits > 0 else 0
+        first_delta = first_visit_rate - prev_first_rate
+        
+        return {
+            'revenue': {'value': total_revenue, 'delta': revenue_delta},
+            'visits': {'value': total_visits, 'delta': visits_delta},
+            'wait_time': {'value': avg_wait, 'delta': wait_delta},
+            'first_rate': {'value': first_visit_rate, 'delta': first_delta}
+        }
     
-    return df
+    def get_daily_trend(self, target_month: pd.Period) -> pd.DataFrame:
+        """Get daily revenue and visit trends"""
+        df_month = self.data[self.data['date'].dt.to_period('M') == target_month]
+        
+        daily = df_month.groupby('date').agg({
+            'revenue': 'sum',
+            'date': 'count'
+        }).rename(columns={'date': 'visits'})
+        
+        return daily.reset_index()
+    
+    def get_heatmap_data(self, target_month: pd.Period) -> pd.DataFrame:
+        """Get congestion heatmap (weekday × hour)"""
+        df_month = self.data[self.data['date'].dt.to_period('M') == target_month]
+        
+        heatmap = df_month.groupby(['weekday', 'hour']).size().reset_index(name='count')
+        heatmap_pivot = heatmap.pivot(index='hour', columns='weekday', values='count').fillna(0)
+        
+        return heatmap_pivot
+    
+    def get_segment_distribution(self, target_month: pd.Period) -> pd.DataFrame:
+        """Get patient segment distribution"""
+        df_month = self.data[self.data['date'].dt.to_period('M') == target_month]
+        
+        segment_map = {
+            'lifestyle': '生活習慣病',
+            'acute': '急性疾患',
+            'checkup': '検診・ドック'
+        }
+        
+        dist = df_month['segment'].value_counts().reset_index()
+        dist.columns = ['segment', 'count']
+        dist['segment'] = dist['segment'].map(segment_map)
+        
+        return dist
+    
+    def get_age_distribution(self, target_month: pd.Period) -> pd.DataFrame:
+        """Get age distribution"""
+        df_month = self.data[self.data['date'].dt.to_period('M') == target_month]
+        
+        return df_month[['age']]
 
-# データ生成
-df = generate_clinic_data()
+# ============================================================
+# 3. DASHBOARD UI
+# ============================================================
 
-# ========================================
-# サイドバー
-# ========================================
-st.sidebar.title("🏥 クリニック経営分析")
-st.sidebar.markdown("---")
+def render_header():
+    """Render dashboard header"""
+    st.markdown(f"""
+    <div class="dashboard-header">
+        <h2 class="clinic-title">🏥 Metro Central Internal Medicine</h2>
+        <div class="last-updated">最終データ更新: {datetime.now().strftime('%Y年%m月%d日 %H:%M')}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-# 期間フィルター
-st.sidebar.subheader("📅 表示期間")
-available_months = df['year_month'].unique()
-available_months_str = [str(m) for m in sorted(available_months)]
+def render_kpi_card(icon: str, label: str, value: str, delta: float, inverse: bool = False):
+    """Render custom KPI card with HTML/CSS"""
+    delta_class = "negative" if (delta < 0 and not inverse) or (delta > 0 and inverse) else "positive"
+    delta_arrow = "↓" if delta < 0 else "↑"
+    delta_text = f"{abs(delta):.1f}%" if delta != 0 else "0%"
+    
+    return f"""
+    <div class="kpi-card">
+        <div class="kpi-icon">{icon}</div>
+        <div class="kpi-label">{label}</div>
+        <div class="kpi-value">{value}</div>
+        <div class="kpi-delta {delta_class}">
+            <span>{delta_arrow}</span>
+            <span>{delta_text} vs 前月</span>
+        </div>
+    </div>
+    """
 
-selected_months = st.sidebar.multiselect(
-    "表示する月を選択",
-    options=available_months_str,
-    default=available_months_str[-3:]  # デフォルトは直近3ヶ月
-)
-
-if not selected_months:
-    selected_months = available_months_str[-3:]
-
-# フィルタリング
-filtered_df = df[df['year_month'].astype(str).isin(selected_months)]
-
-# サイドバーに統計情報
-st.sidebar.markdown("---")
-st.sidebar.subheader("📊 クリニック概要")
-st.sidebar.info("""
-**診療科**: 総合内科  
-**所在地**: 都心オフィス街  
-**医師数**: 1名（1診制）  
-**営業日**: 月〜土（木・土は午前のみ）  
-**休診日**: 日曜・祝日
-""")
-
-st.sidebar.markdown("---")
-st.sidebar.caption("© 2025 Clinic Analytics Dashboard")
-
-# ========================================
-# メインエリア
-# ========================================
-st.title("🏥 クリニック経営分析ダッシュボード")
-st.markdown(f"**表示期間**: {', '.join(selected_months)}")
-st.markdown("---")
-
-# ========================================
-# 1. トップKPI指標
-# ========================================
-st.subheader("📈 主要指標（KPI）")
-
-# 営業日数の計算
-operating_days = filtered_df['visit_date'].nunique()
-
-# KPI計算
-total_visits = len(filtered_df)
-avg_daily_visits = total_visits / operating_days if operating_days > 0 else 0
-first_visit_rate = (filtered_df['visit_type'] == '初診').sum() / total_visits * 100 if total_visits > 0 else 0
-total_revenue = filtered_df['revenue'].sum()
-
-# メトリクス表示（4列）
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.metric(
-        label="📊 総来院数",
-        value=f"{total_visits:,}人",
-        delta=f"{operating_days}営業日"
+def configure_plotly_layout(fig: go.Figure, title: str = None) -> go.Figure:
+    """Apply consistent Plotly styling"""
+    fig.update_layout(
+        title=dict(
+            text=title,
+            font=dict(size=18, weight=600, color=COLOR.TEXT, family="Inter, Noto Sans JP, sans-serif"),
+            x=0,
+            xanchor='left'
+        ) if title else None,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(family="Inter, Noto Sans JP, sans-serif", color=COLOR.TEXT),
+        margin=dict(t=60 if title else 30, b=30, l=30, r=30),
+        hovermode='x unified',
+        xaxis=dict(
+            showgrid=False,
+            showline=True,
+            linecolor=COLOR.GRID,
+            linewidth=1
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor=COLOR.GRID,
+            gridwidth=1,
+            showline=False
+        ),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        )
     )
+    return fig
 
-with col2:
-    st.metric(
-        label="👥 1日平均来院数",
-        value=f"{avg_daily_visits:.1f}人",
-        delta="目標: 60人"
-    )
-
-with col3:
-    st.metric(
-        label="🆕 初診率",
-        value=f"{first_visit_rate:.1f}%",
-        delta="理想: 15-20%"
-    )
-
-with col4:
-    st.metric(
-        label="💰 概算総売上",
-        value=f"¥{total_revenue:,.0f}",
-        delta=f"¥{total_revenue/operating_days:,.0f}/日"
-    )
-
-st.markdown("---")
-
-# ========================================
-# 2. グラフエリア
-# ========================================
-
-# ========================================
-# 2-1. 日次来院数推移（初診・再診の積み上げ）
-# ========================================
-st.subheader("📅 日次来院数推移")
-
-# 日付ごとに初診・再診を集計
-daily_visits = filtered_df.groupby(['visit_date', 'visit_type']).size().reset_index(name='count')
-daily_visits_pivot = daily_visits.pivot(index='visit_date', columns='visit_type', values='count').fillna(0)
-
-# Plotlyで積み上げ棒グラフ
-fig_daily = go.Figure()
-
-fig_daily.add_trace(go.Bar(
-    x=daily_visits_pivot.index,
-    y=daily_visits_pivot['再診'] if '再診' in daily_visits_pivot.columns else [],
-    name='再診',
-    marker_color='#4ECDC4'
-))
-
-fig_daily.add_trace(go.Bar(
-    x=daily_visits_pivot.index,
-    y=daily_visits_pivot['初診'] if '初診' in daily_visits_pivot.columns else [],
-    name='初診',
-    marker_color='#FF6B6B'
-))
-
-fig_daily.update_layout(
-    barmode='stack',
-    title='日次来院数（初診 vs 再診）',
-    xaxis_title='日付',
-    yaxis_title='来院数（人）',
-    hovermode='x unified',
-    template='plotly_white',
-    height=400
-)
-
-st.plotly_chart(fig_daily, use_container_width=True)
-
-# ========================================
-# 2-2. 曜日別・時間帯別の混雑傾向
-# ========================================
-st.subheader("🕐 曜日別・時間帯別の混雑傾向")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    # 曜日別来院数
-    weekday_order = ['月', '火', '水', '木', '金', '土']
-    weekday_visits = filtered_df.groupby('weekday_jp').size().reset_index(name='count')
-    weekday_visits['weekday_jp'] = pd.Categorical(weekday_visits['weekday_jp'], categories=weekday_order, ordered=True)
-    weekday_visits = weekday_visits.sort_values('weekday_jp')
+def render_dual_axis_chart(daily_data: pd.DataFrame):
+    """Render revenue & visits dual-axis chart"""
+    fig = go.Figure()
     
-    fig_weekday = px.bar(
-        weekday_visits,
-        x='weekday_jp',
-        y='count',
-        title='曜日別来院数',
-        labels={'weekday_jp': '曜日', 'count': '来院数（人）'},
-        color='count',
-        color_continuous_scale='Blues',
-        text='count'
-    )
+    # Bar chart for visits
+    fig.add_trace(go.Bar(
+        x=daily_data['date'],
+        y=daily_data['visits'],
+        name='来院数',
+        marker_color=COLOR.PRIMARY,
+        opacity=0.3,
+        yaxis='y',
+        hovertemplate='%{y}人<extra></extra>'
+    ))
     
-    fig_weekday.update_traces(texttemplate='%{text}人', textposition='outside')
-    fig_weekday.update_layout(
-        template='plotly_white',
-        showlegend=False,
-        height=400
-    )
+    # Line chart for revenue
+    fig.add_trace(go.Scatter(
+        x=daily_data['date'],
+        y=daily_data['revenue'],
+        name='売上',
+        mode='lines+markers',
+        line=dict(color=COLOR.PRIMARY, width=3),
+        marker=dict(size=6),
+        yaxis='y2',
+        hovertemplate='¥%{y:,.0f}<extra></extra>'
+    ))
     
-    st.plotly_chart(fig_weekday, use_container_width=True)
-
-with col2:
-    # 時間帯別来院数
-    hour_visits = filtered_df.groupby('hour').size().reset_index(name='count')
-    hour_visits = hour_visits.sort_values('hour')
-    
-    fig_hour = px.bar(
-        hour_visits,
-        x='hour',
-        y='count',
-        title='時間帯別来院数',
-        labels={'hour': '時間帯', 'count': '来院数（人）'},
-        color='count',
-        color_continuous_scale='Greens',
-        text='count'
-    )
-    
-    fig_hour.update_traces(texttemplate='%{text}人', textposition='outside')
-    fig_hour.update_layout(
-        template='plotly_white',
-        showlegend=False,
-        height=400,
-        xaxis=dict(tickmode='linear', tick0=9, dtick=1)
-    )
-    
-    st.plotly_chart(fig_hour, use_container_width=True)
-
-# ========================================
-# 2-3. 患者属性分析
-# ========================================
-st.subheader("👥 患者属性分析")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    # 年齢階層別分布
-    age_bins = [0, 30, 40, 50, 60, 70, 100]
-    age_labels = ['20代', '30代', '40代', '50代', '60代', '70代以上']
-    filtered_df['age_group'] = pd.cut(filtered_df['age'], bins=age_bins, labels=age_labels, right=False)
-    
-    age_dist = filtered_df['age_group'].value_counts().sort_index().reset_index()
-    age_dist.columns = ['age_group', 'count']
-    
-    fig_age = px.bar(
-        age_dist,
-        x='age_group',
-        y='count',
-        title='年齢階層別来院数',
-        labels={'age_group': '年齢層', 'count': '来院数（人）'},
-        color='count',
-        color_continuous_scale='Purples',
-        text='count'
-    )
-    
-    fig_age.update_traces(texttemplate='%{text}人', textposition='outside')
-    fig_age.update_layout(
-        template='plotly_white',
-        showlegend=False,
-        height=400
-    )
-    
-    st.plotly_chart(fig_age, use_container_width=True)
-
-with col2:
-    # 保険種別分布
-    insurance_dist = filtered_df['insurance_type'].value_counts().reset_index()
-    insurance_dist.columns = ['insurance_type', 'count']
-    
-    fig_insurance = px.pie(
-        insurance_dist,
-        names='insurance_type',
-        values='count',
-        title='保険種別の割合',
-        color_discrete_sequence=['#0056b3', '#4ECDC4', '#FF6B6B'],
-        hole=0.4
+    fig.update_layout(
+        yaxis=dict(
+            title='来院数（人）',
+            side='left',
+            showgrid=True,
+            gridcolor=COLOR.GRID
+        ),
+        yaxis2=dict(
+            title='売上（円）',
+            overlaying='y',
+            side='right',
+            showgrid=False
+        ),
+        hovermode='x unified'
     )
     
-    fig_insurance.update_traces(textposition='inside', textinfo='percent+label')
-    fig_insurance.update_layout(
-        template='plotly_white',
-        height=400
-    )
+    fig = configure_plotly_layout(fig, title="売上 & 来院数トレンド")
     
-    st.plotly_chart(fig_insurance, use_container_width=True)
+    return fig
 
-# ========================================
-# 3. 売上分析
-# ========================================
-st.markdown("---")
-st.subheader("💰 売上分析")
+def render_heatmap(heatmap_data: pd.DataFrame):
+    """Render congestion heatmap"""
+    weekday_labels = ['月', '火', '水', '木', '金', '土']
+    
+    fig = go.Figure(data=go.Heatmap(
+        z=heatmap_data.values,
+        x=[weekday_labels[i] for i in heatmap_data.columns],
+        y=[f"{h}:00" for h in heatmap_data.index],
+        colorscale='Blues',
+        showscale=True,
+        hovertemplate='%{x} %{y}<br>来院数: %{z}人<extra></extra>'
+    ))
+    
+    fig = configure_plotly_layout(fig, title="混雑ヒートマップ")
+    fig.update_xaxes(side='top')
+    
+    return fig
 
-col1, col2 = st.columns(2)
+def render_donut_chart(segment_data: pd.DataFrame):
+    """Render disease segment donut chart"""
+    fig = go.Figure(data=[go.Pie(
+        labels=segment_data['segment'],
+        values=segment_data['count'],
+        hole=0.5,
+        marker=dict(colors=[COLOR.PRIMARY, COLOR.SECONDARY, COLOR.ACCENT]),
+        textinfo='label+percent',
+        textposition='outside',
+        hovertemplate='%{label}<br>%{value}人 (%{percent})<extra></extra>'
+    )])
+    
+    fig = configure_plotly_layout(fig, title="疾患別構成比")
+    
+    return fig
 
-with col1:
-    # 日次売上推移
-    daily_revenue = filtered_df.groupby('visit_date')['revenue'].sum().reset_index()
+def render_age_histogram(age_data: pd.DataFrame):
+    """Render age distribution histogram"""
+    fig = go.Figure(data=[go.Histogram(
+        x=age_data['age'],
+        nbinsx=13,
+        marker_color=COLOR.PRIMARY,
+        opacity=0.7,
+        hovertemplate='年齢: %{x}<br>人数: %{y}<extra></extra>'
+    )])
     
-    fig_revenue = px.line(
-        daily_revenue,
-        x='visit_date',
-        y='revenue',
-        title='日次売上推移',
-        labels={'visit_date': '日付', 'revenue': '売上（円）'},
-        markers=True
-    )
+    fig.update_xaxes(title='年齢')
+    fig.update_yaxes(title='来院数（人）')
     
-    fig_revenue.update_traces(line_color='#0056b3', line_width=2)
-    fig_revenue.update_layout(
-        template='plotly_white',
-        height=400
-    )
+    fig = configure_plotly_layout(fig, title="年齢分布")
     
-    st.plotly_chart(fig_revenue, use_container_width=True)
+    return fig
 
-with col2:
-    # 初診 vs 再診の売上比較
-    revenue_by_type = filtered_df.groupby('visit_type')['revenue'].sum().reset_index()
-    
-    fig_revenue_type = px.bar(
-        revenue_by_type,
-        x='visit_type',
-        y='revenue',
-        title='初診 vs 再診の売上比較',
-        labels={'visit_type': '来院タイプ', 'revenue': '売上（円）'},
-        color='visit_type',
-        color_discrete_map={'初診': '#FF6B6B', '再診': '#4ECDC4'},
-        text='revenue'
-    )
-    
-    fig_revenue_type.update_traces(texttemplate='¥%{text:,.0f}', textposition='outside')
-    fig_revenue_type.update_layout(
-        template='plotly_white',
-        showlegend=False,
-        height=400
-    )
-    
-    st.plotly_chart(fig_revenue_type, use_container_width=True)
+# ============================================================
+# 4. MAIN APPLICATION
+# ============================================================
 
-# ========================================
-# 4. データテーブル（エキスパンダー）
-# ========================================
-st.markdown("---")
-with st.expander("📋 詳細データテーブル"):
-    st.dataframe(
-        filtered_df[['visit_date', 'visit_type', 'age', 'gender', 'insurance_type', 'revenue', 'weekday_jp', 'hour']]
-        .sort_values('visit_date', ascending=False)
-        .head(100),
-        use_container_width=True
-    )
+def main():
+    # Initialize Data Manager
+    dm = DataManager(months_back=6)
     
-    st.download_button(
-        label="📥 CSVダウンロード",
-        data=filtered_df.to_csv(index=False).encode('utf-8-sig'),
-        file_name=f"clinic_data_{datetime.now().strftime('%Y%m%d')}.csv",
-        mime="text/csv"
-    )
+    # Current month
+    current_month = pd.Period(datetime.now(), freq='M')
+    
+    # Get KPIs
+    kpis = dm.get_monthly_summary(current_month)
+    
+    # Render Header
+    render_header()
+    
+    # ========== ROW 1: Executive KPI Cards ==========
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown(
+            render_kpi_card(
+                "💰",
+                "今月の売上",
+                f"¥{kpis['revenue']['value']:,.0f}",
+                kpis['revenue']['delta']
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col2:
+        st.markdown(
+            render_kpi_card(
+                "👥",
+                "来院数",
+                f"{kpis['visits']['value']:,}人",
+                kpis['visits']['delta']
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col3:
+        st.markdown(
+            render_kpi_card(
+                "⏱️",
+                "平均待ち時間",
+                f"{kpis['wait_time']['value']:.0f}分",
+                kpis['wait_time']['delta'],
+                inverse=True  # Lower is better
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col4:
+        st.markdown(
+            render_kpi_card(
+                "🆕",
+                "初診率",
+                f"{kpis['first_rate']['value']:.1f}%",
+                kpis['first_rate']['delta']
+            ),
+            unsafe_allow_html=True
+        )
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # ========== ROW 2: Trends & Operations ==========
+    col_left, col_right = st.columns([2, 1])
+    
+    with col_left:
+        daily_trend = dm.get_daily_trend(current_month)
+        fig_dual = render_dual_axis_chart(daily_trend)
+        st.markdown('<div class="graph-container">', unsafe_allow_html=True)
+        st.plotly_chart(fig_dual, use_container_width=True, config={'displayModeBar': False})
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with col_right:
+        heatmap_data = dm.get_heatmap_data(current_month)
+        fig_heatmap = render_heatmap(heatmap_data)
+        st.markdown('<div class="graph-container">', unsafe_allow_html=True)
+        st.plotly_chart(fig_heatmap, use_container_width=True, config={'displayModeBar': False})
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # ========== ROW 3: Patient Insights ==========
+    col_left, col_right = st.columns(2)
+    
+    with col_left:
+        segment_data = dm.get_segment_distribution(current_month)
+        fig_donut = render_donut_chart(segment_data)
+        st.markdown('<div class="graph-container">', unsafe_allow_html=True)
+        st.plotly_chart(fig_donut, use_container_width=True, config={'displayModeBar': False})
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with col_right:
+        age_data = dm.get_age_distribution(current_month)
+        fig_age = render_age_histogram(age_data)
+        st.markdown('<div class="graph-container">', unsafe_allow_html=True)
+        st.plotly_chart(fig_age, use_container_width=True, config={'displayModeBar': False})
+        st.markdown('</div>', unsafe_allow_html=True)
 
-# ========================================
-# フッター
-# ========================================
-st.markdown("---")
-st.markdown("""
-<div style='text-align: center; color: #6c757d; padding: 2rem;'>
-    <p><strong>🏥 クリニック経営分析ダッシュボード</strong></p>
-    <p>Developed with Streamlit × Plotly | AI駆動開発</p>
-</div>
-""", unsafe_allow_html=True)
+if __name__ == "__main__":
+    main()
